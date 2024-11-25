@@ -23,24 +23,24 @@ public class MainModule {
             System.out.println("5. Exit");
             System.out.print("Enter your choice: ");
             
-            int choice = scanner.nextInt();  // User input for choice
+            int choice = scanner.nextInt(); 
 
             switch (choice) {
                 case 1:
-                    applyLoan();  // Apply a new loan
+                    applyLoan();  
                     break;
                 case 2:
-                    getAllLoans();  // View all loans
+                    getAllLoans();  
                     break;
                 case 3:
-                    getLoanById();  // Get loan by ID
+                    getLoanById(); 
                     break;
                 case 4:
-                    loanRepayment();  // Make a loan repayment
+                    loanRepayment();  
                     break;
                 case 5:
                     System.out.println("Exiting Loan Management System.");
-                    System.exit(0);  // Exit the program
+                    System.exit(0);  
                     break;
                 default:
                     System.out.println("Invalid choice, please try again.");
@@ -48,11 +48,9 @@ public class MainModule {
         }
     }
 
-    // Method to apply for a new loan
     private static void applyLoan() {
         System.out.println("\n--- Apply Loan ---");
 
-        // Prompt user for loan details
         System.out.print("Enter Loan ID: ");
         int loanId = scanner.nextInt();
 
@@ -60,7 +58,7 @@ public class MainModule {
         int customerId = scanner.nextInt();
 
         System.out.print("Enter Customer Name: ");
-        scanner.nextLine();  // Consume newline
+        scanner.nextLine();  
         String name = scanner.nextLine();
 
         System.out.print("Enter Principal Amount: ");
@@ -73,15 +71,13 @@ public class MainModule {
         int loanTerm = scanner.nextInt();
 
         System.out.print("Enter Loan Status (Pending/Approved): ");
-        scanner.nextLine();  // Consume newline
+        scanner.nextLine();  
         String loanStatus = scanner.nextLine();
 
-        // Create Customer and Loan objects
         Customer customer = new Customer(customerId, name, "dummyEmail", "dummyPhone", "dummyAddress", 700);
         Loan loan = new Loan(loanId, customer, principalAmount, interestRate, loanTerm, loanStatus);
 
         try {
-            // Apply the loan using the repository
             loanRepo.applyLoan(loan);
             System.out.println("Loan successfully applied: " + loan);
         } catch (InvalidLoanException e) {
@@ -89,7 +85,6 @@ public class MainModule {
         }
     }
 
-    // Method to display all loans
     private static void getAllLoans() {
         System.out.println("\n--- Get All Loans ---");
 
@@ -107,7 +102,6 @@ public class MainModule {
         }
     }
 
-    // Method to get loan details by ID
     private static void getLoanById() {
         System.out.println("\n--- Get Loan By ID ---");
         System.out.print("Enter Loan ID: ");
@@ -121,7 +115,6 @@ public class MainModule {
         }
     }
 
-    // Method to make a loan repayment
     private static void loanRepayment() {
         System.out.println("\n--- Loan Repayment ---");
         System.out.print("Enter Loan ID: ");
@@ -131,7 +124,20 @@ public class MainModule {
         double amount = scanner.nextDouble();
 
         try {
+          
+            Loan loan = loanRepo.getLoanById(loanId);
+
+           
+            double emi = loanRepo.calculateEMI(loanId);
+            if (amount < emi) {
+                System.out.println("Repayment amount must be greater than or equal to EMI.");
+                return;  
+            }
+
+          
             loanRepo.loanRepayment(loanId, amount);
+            System.out.println("Successfully repaid " + amount + " towards loan ID " + loanId);
+
         } catch (InvalidLoanException e) {
             System.err.println("Error: " + e.getMessage());
         }
